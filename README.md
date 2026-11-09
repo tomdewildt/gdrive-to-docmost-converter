@@ -19,7 +19,7 @@ Prerequisites:
 ### Development
 
 1. Run `mise run init` to initialize the environment.
-2. Copy `.env.example` to `.env` and configure the settings. Use the docmost admin user, the space slug (the part after `/s/` in the space URL), and the path to the client secret JSON.
+2. Copy `.env.example` to `.env` and configure the settings. Set either `CONV_DOCMOST_API_KEY` or `CONV_DOCMOST_EMAIL` and `CONV_DOCMOST_PASSWORD`, the space slug (the part after `/s/` in the space URL), and the path to the client secret JSON.
 3. Run `mise run start -- doc <id-or-url>` to convert a single document. The first run opens a browser window to authorize access to Google Drive and caches the token at the configured token path.
 4. Run `mise run start -- folder <id-or-url>` to convert a folder and its subfolders.
 5. Run `mise run test` to run all tests, or `mise run test:unit` and `mise run test:integration` to run the unit and integration tests separately. The integration tests run against the docmost server.
