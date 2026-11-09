@@ -10,7 +10,7 @@ import httpx
 import pytest
 
 from gdrive_to_docmost_converter.config import config
-from gdrive_to_docmost_converter.docmost import DocmostClient, create_docmost_client
+from gdrive_to_docmost_converter.docmost import DocmostClient, HttpxDocmostClient, create_docmost_client
 from gdrive_to_docmost_converter.drive import (
     _GOOGLE_DRIVE_DOCUMENT_MIME_TYPE,
     DriveClient,
@@ -28,6 +28,8 @@ BuildDriveFile = Callable[[str, str], dict[str, str]]
 BuildHtmlDocument = Callable[..., str]
 BuildHtmlSpan = Callable[..., str]
 WaitForImportJob = Callable[[str], dict[str, Any]]
+HttpHandler = Callable[[httpx.Request], httpx.Response]
+BuildDocmostClient = Callable[..., HttpxDocmostClient]
 
 
 class FakeDriveClient(DriveClient):
@@ -207,6 +209,20 @@ def wait_for_import_job(docmost_client: DocmostClient) -> WaitForImportJob:
         return import_job
 
     return wait
+
+
+@pytest.fixture()
+def build_docmost_client() -> BuildDocmostClient:
+    def build(handler: HttpHandler, *, api_key: str | None = None) -> HttpxDocmostClient:
+        return HttpxDocmostClient(
+            "http://docmost.test",
+            api_key=api_key,
+            email="user@example.com",
+            password="password",
+            transport=httpx.MockTransport(handler),
+        )
+
+    return build
 
 
 @pytest.fixture()
