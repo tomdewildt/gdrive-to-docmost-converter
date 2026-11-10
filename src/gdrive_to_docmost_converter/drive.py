@@ -74,7 +74,13 @@ class GoogleDriveClient(DriveClient):
         while True:
             response = (
                 self._get_service()
-                .list(q=query, fields="nextPageToken, files(id, name, mimeType)", pageToken=page_token)
+                .list(
+                    q=query,
+                    fields="nextPageToken, files(id, name, mimeType)",
+                    pageToken=page_token,
+                    supportsAllDrives=True,
+                    includeItemsFromAllDrives=True,
+                )
                 .execute()
             )
             items += [DriveItem(file["id"], file["name"], file["mimeType"]) for file in response.get("files", [])]
@@ -85,7 +91,7 @@ class GoogleDriveClient(DriveClient):
         return [item for item in items if item.is_document or item.is_folder]
 
     def get_item(self, item_id: str) -> DriveItem:
-        file = self._get_service().get(fileId=item_id, fields="id, name, mimeType").execute()
+        file = self._get_service().get(fileId=item_id, fields="id, name, mimeType", supportsAllDrives=True).execute()
         return DriveItem(file["id"], file["name"], file["mimeType"])
 
     def export_html(self, doc_id: str) -> bytes:
